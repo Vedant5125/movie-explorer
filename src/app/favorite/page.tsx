@@ -1,51 +1,3 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-// import Nav from "@/components/Navbar";
-
-// export default function FavoritesPage() {
-//   const [favorites, setFavorites] = useState<string[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchFavorites = async () => {
-//       const res = await fetch("/api/favorites");
-//       if (res.ok) {
-//         const data = await res.json();
-//         setFavorites(data.favorites || []);
-//       }
-//       setLoading(false);
-//     };
-//     fetchFavorites();
-//   }, []);
-
-//   if (loading) return <p>Loading favorites...</p>;
-
-//   return (
-//     <>
-//       <Nav />
-//       <div className="p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-//         {favorites.length === 0 ? (
-//           <p>No favorite movies yet.</p>
-//         ) : (
-//           favorites.map((movie, idx) => (
-//             <Card key={idx} className="shadow-lg">
-//               <CardHeader>
-//                 <CardTitle>{movie}</CardTitle>
-//               </CardHeader>
-//               <CardContent>
-//                 <p>Movie ID: {movie}</p>
-//               </CardContent>
-//             </Card>
-//           ))
-//         )}
-//       </div>
-//     </>
-//   )
-// }
-
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -65,6 +17,8 @@ export default function FavoritesPage() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -109,6 +63,11 @@ export default function FavoritesPage() {
     fetchMovieDetails();
   }, [favoriteIds]);
 
+  const handleSearch = (query: string) => {
+    setQuery(query);
+    setPage(1);
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -118,7 +77,7 @@ export default function FavoritesPage() {
 
   return (
     <>
-    <Nav />
+    <Nav onSearch={handleSearch}/>
       <div className="p-6 grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {favoriteMovies.length === 0 ? (
           <p className="text-center text-lg font-medium mt-10">
