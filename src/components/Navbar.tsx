@@ -32,7 +32,9 @@ export default function Nav({ onSearch }: { onSearch: (query: string) => void })
     <Navbar shouldHideOnScroll className="flex justify-between p-3 h-[110px]">
 
       <NavbarBrand>
+        <Link href="/" >
           <Logo />
+        </Link>
       </NavbarBrand>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
