@@ -23,6 +23,8 @@ export default function MoviePage() {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const { data: session } = useSession();
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchMovie = async () => {
@@ -74,6 +76,11 @@ export default function MoviePage() {
     }
   };
 
+  const handleSearch = (query: string) => {
+    setQuery(query);
+    setPage(1);
+  };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
@@ -92,7 +99,7 @@ export default function MoviePage() {
 
   return (
     <>
-    <Nav />
+    <Nav onSearch={handleSearch}/>
     <main className="p-6 md:p-12">
       <div className="flex flex-col md:flex-row gap-10">
         <div className="relative w-full md:w-1/3 h-[28rem]">
