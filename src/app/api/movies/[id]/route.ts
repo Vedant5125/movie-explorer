@@ -4,20 +4,17 @@ const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> } // ✅ note: params is a Promise
 ) {
+  const { id: movieId } = await context.params; // ✅ await before using
+
   if (!TMDB_API_KEY) {
     return NextResponse.json({ error: "Missing TMDB API key" }, { status: 500 });
   }
 
-  const movieId = params.id;
-
   try {
     const tmdbUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${TMDB_API_KEY}`;
-    
-    const response = await fetch(tmdbUrl, {
-      next: { revalidate: 3600 } // Revalidate after 1 hour
-    });
+    const response = await fetch(tmdbUrl, { next: { revalidate: 3600 } });
 
     if (response.status === 404) {
       return NextResponse.json({ error: "Movie not found" }, { status: 404 });
@@ -32,7 +29,6 @@ export async function GET(
 
     const data = await response.json();
     return NextResponse.json(data);
-    
   } catch (error) {
     console.error(`Movie Detail API error for ID ${movieId}:`, error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
