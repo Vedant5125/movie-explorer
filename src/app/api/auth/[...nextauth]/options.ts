@@ -1,9 +1,10 @@
-import { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider  from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/User';
 import { NextResponse } from 'next/server';
+
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -15,7 +16,7 @@ export const authOptions: NextAuthOptions = {
             password: { label: 'Password', type: 'password' },
         },
 
-        async authorize(credentials: any): Promise<any> {
+        async authorize(credentials): Promise<User | null> {
             await dbConnect();
             if (!credentials?.email || !credentials?.password){
                 throw new Error("Please enter email and password");
@@ -34,10 +35,17 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid credentials");
                 }
 
-                return user;
+                return {
+                    id: user._id.toString(),
+                    name: user.name,
+                    email: user.email,
+                };
 
-            } catch (error : any) {
-                throw new Error(error);
+            } catch (error) {
+                if (error instanceof Error) {
+                    throw new Error(error.message);
+                }
+                throw new Error("Authentication failed");
             }
         }
     })
